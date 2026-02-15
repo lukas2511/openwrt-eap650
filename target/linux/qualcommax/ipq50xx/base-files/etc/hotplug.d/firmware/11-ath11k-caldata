@@ -39,7 +39,8 @@ case "$FIRMWARE" in
 		ath11k_remove_regdomain
 		ath11k_set_macflag
 		;;
-	xiaomi,ax6000)
+	xiaomi,ax6000|\
+	tplink,eap650)
 		caldata_extract "0:art" 0x1000 0x20000
 		;;
 	yuncore,ax830|\
@@ -117,7 +118,8 @@ case "$FIRMWARE" in
 		ath11k_remove_regdomain
 		ath11k_set_macflag
 		;;
-	xiaomi,ax6000)
+	xiaomi,ax6000|\
+	tplink,eap650)
 		caldata_extract "0:art" 0x26800 0x20000
 		;;
 	yuncore,ax850)

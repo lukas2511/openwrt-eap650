@@ -7,6 +7,9 @@ ipq50xx_setup_interfaces()
 {
 	local board="$1"
 	case $board in
+	tplink,eap650)
+		ucidef_set_interface_lan "eth0"
+		;;
 	elecom,wrc-x3000gs2|\
 	iodata,wn-dax3000gr|\
 	linksys,mr5500|\

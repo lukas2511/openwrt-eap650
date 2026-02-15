@@ -1,3 +1,72 @@
+# Fork README
+
+This fork implements support for TP-Link EAP650 access points.
+It's a bit rough and needs hardware modifications to install (original firmware updates seem to be signed, didn't want to mess with that).
+
+## HW mod for serial console access
+
+Normally for serial console access you'd just need to solder in a pin header or even just squish some jumper wires into the holes on the pcb,
+but this AP seems to be designed for use of a level shifter or other kind of interface between the easily accessible pins and the internal
+wiring.
+
+The internal wiring is accessible on two resistors or on the pads of whatever IC was intended to be placed. I decided to risk it and
+soldered in some pin headers with small bridge wires for the serial communication and connected a 3.3V uart adapter, which worked
+without any issues over the whole time I was working on this project.
+
+![](stuff/eap650-serial.jpg)
+
+## Install instructions
+
+### Prepare required data
+- First of, set up the AP and enable SSH
+- Get a backup of mtdblock13: `ssh admin@<ap-ip> cat /dev/mtdblock13 > mtdblock13.img` (ideally back up other stuff as well)
+- Unpack using ubidump: `ubidump mtdblock13.img -s mtdblock13`
+- Generate art.bin: `python stuff/build-art-partition.py mtdblock13`
+- Copy files directory with required firmware: `cp -R stuff/files .`
+
+### Configure OpenWRT
+- Configure openwrt (you can use my config from `stuff/config`, keep in mind that it pre-installs quite a lot of stuff)
+- Build openwrt (this takes a long time..)
+
+### Prepare TFTP server
+- Set up a tftp server on 192.168.10.19/24 connected to the AP
+- Copy `bin/targets/qualcommax/ipq50xx/openwrt-qualcommax-ipq50xx-tplink_eap650-squashfs-factory.ubi` to the tftp directory as `firmware.ubi`
+- Copy `art.bin` to the tftp directory
+
+### Installation
+
+Get serial console access (hw mod needed), press Ctrl+B in uboot and run the following commands on the uboot shell:
+
+```
+tftpboot firmware.ubi
+nand erase 0x1100000 0x6900000
+nand write 0x44000000 0x1100000 0x$filesize
+
+tftpboot art.bin
+nand erase 0x1000000 0x100000
+nand write 0x44000000 0x1000000 0x$filesize
+
+setenv fdt_high 0x4A400000
+setenv mtdids nand0=nand0
+setenv mtdparts mtdparts=nand0:0x6900000@0x1100000(fs),${msmparts}
+setenv bootwrt "ubi part fs; ubi read 0x44000000 kernel; bootm 0x44000000;"
+setenv bootcmd "run bootwrt"
+
+saveenv
+reset
+```
+
+The AP should now boot into OpenWRT.
+
+Further updates can be done usign normal sysupgrade methods, which also will resize the overlay partition to the max available space.
+
+## Further notes
+
+The DTS file states that MAC1 is connected to a QCA8081 PHY, which would imply 2.5G support.
+Unfortunately I just simply have no idea which PHY is being used, and it works fine on 1G, so I didn't bother changing it.
+
+# Original README
+
 ![OpenWrt logo](include/logo.png)
 
 OpenWrt Project is a Linux operating system targeting embedded devices. Instead

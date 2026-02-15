@@ -230,6 +230,7 @@ platform_do_upgrade() {
 		;;
 	yuncore,ax830|\
 	yuncore,ax850|\
+	tplink,eap650|\
 	zyxel,scr50axe)
 		CI_UBIPART="rootfs"
 		remove_oem_ubi_volume ubi_rootfs
