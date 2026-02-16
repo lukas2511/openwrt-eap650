@@ -22,7 +22,7 @@
 		 * ubi.mtd=rootfs_1 root=mtd:ubi_rootfs rootfstype=squashfs rootwait uart_en=1
 		 * so we need to override and set ubi.mtd=rootfs
 		 */
-		bootargs-append = " ubi.mtd=rootfs root=/dev/ubiblock0_1 coherent_pool=2M";
+		bootargs-append = " ubi.mtd=rootfs root=/dev/ubiblock0_1 swiotlb=1 coherent_pool=2M";
 		stdout-path = "serial0:115200n8";
 	};
 
@@ -196,7 +196,7 @@
 *    | +------+   +--------+ |
 *    |                       |
 *    |                       |            _______________________
-*    |                       |           |        QCA8081        |
+*    |                       |           |        RTL8211f       |
 *    | +------+   +--------+ |           | +-------------------+ |
 *    | | MAC1 |---| Uniphy |-+-- SGMII+--+ |        Phy        | |
 *    | +------+   +--------+ |           | +-------------------+ |
@@ -219,7 +219,7 @@
 			phy_dac = <0x10 0x10>;
 		};
 
-		// MAC1 -> Uniphy --- SGMII --- QCA8081
+		// MAC1 -> Uniphy --- SGMII --- RTL8211f
 		port@2 {
 			port_id = <2>;
 			mdiobus = <&mdio1>;
@@ -237,11 +237,11 @@
 	nvmem-cell-names = "mac-address";
 };
 
-// MAC1 ---SGMII---> QCA8081
+// MAC1 ---SGMII---> RTL8211f
 &dp2 {
 	status = "okay";
 
-	phy-handle = <&qca8081>;
+	phy-handle = <&rtl8211f>;
 	nvmem-cells = <&mac_addr_dp2 0>;
 	nvmem-cell-names = "mac-address";
 };
@@ -257,9 +257,9 @@
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 39 GPIO_ACTIVE_LOW>;
 
-	// QCA8081 Phy -> WAN
-	qca8081: ethernet-phy@3 {
-		compatible = "ethernet-phy-id004d.d101";
+	// RTL8211f Phy -> WAN
+	rtl8211f: ethernet-phy@3 {
+		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <4>;
 
 		leds {

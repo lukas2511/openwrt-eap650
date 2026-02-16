@@ -60,11 +60,6 @@ The AP should now boot into OpenWRT.
 
 Further updates can be done usign normal sysupgrade methods, which also will resize the overlay partition to the max available space.
 
-## Further notes
-
-The DTS file states that MAC1 is connected to a QCA8081 PHY, which would imply 2.5G support.
-Unfortunately I just simply have no idea which PHY is being used, and it works fine on 1G, so I didn't bother changing it.
-
 # Original README
 
 ![OpenWrt logo](include/logo.png)
